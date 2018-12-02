@@ -7,5 +7,5 @@ public class User {
     private String password;
     private String email;
     private BigInteger id;
-    private UserGroup group;
+    private Group group;
 }
