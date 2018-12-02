@@ -24,10 +24,10 @@ public class DatabaseConnection {
 
         if (openConnection == null || openConnection.isClosed()) {
 
-            Connection newConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/szkola_programowania", "root", "coderslab");
-            return openConnection;
+            openConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/szkola_programowania", "root", "coderslab");
+
         }
-        return null;
+        return openConnection;
 
     }
 }
