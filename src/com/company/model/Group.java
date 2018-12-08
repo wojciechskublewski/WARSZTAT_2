@@ -38,6 +38,31 @@ public class Group {
         return uArray;
     }
 
+    static public Group loadById(Connection conn, int id) throws SQLException{
+        String sql = "SELECT * FROM user_group WHERE id=?";
+        PreparedStatement preparedStatement = conn.prepareStatement(sql);
+        preparedStatement.setInt(1,id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        if (resultSet.next()) {
+            Group loadedGroup = new Group();
+            loadedGroup.id =resultSet.getInt("id");
+            loadedGroup.name = resultSet.getString("name");
+            return loadedGroup;
+        }
+        return null;
+    }
+
+    public void delete(Connection conn, int id) throws SQLException{
+        if (id !=0) {
+            String sql = "DELETE FROM user_group WHERE id=?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setInt(1,id);
+            preparedStatement.executeUpdate();
+            id=0;
+        }
+    }
+
+
     @Override
     public String toString() {
         return "Group{" +
