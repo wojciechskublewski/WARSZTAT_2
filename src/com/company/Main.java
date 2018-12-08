@@ -24,9 +24,10 @@ public class Main {
         src.com.company.model.Exercise exercise = new Exercise();
         src.com.company.model.Solution solution = new Solution();
         try {
-            group.delete(getEfficientConnection(),3);
-            System.out.println(Arrays.toString(Group.loadAllGroup(getEfficientConnection())));
-            //System.out.println(Arrays.toString(User.loadAllUser(getEfficientConnection())));
+            user.delete(getEfficientConnection(),3);
+            //group.delete(getEfficientConnection(),3);
+            //System.out.println(Arrays.toString(Group.loadAllGroup(getEfficientConnection())));
+            System.out.println(Arrays.toString(User.loadAllUser(getEfficientConnection())));
             //System.out.println(Arrays.toString(Exercise.loadAllExercise(getEfficientConnection())));
             //System.out.println(Arrays.toString(Solution.loadAllSolution(getEfficientConnection())));
             //System.out.println(Group.loadById(DatabaseConnection.getEfficientConnection(),2));
