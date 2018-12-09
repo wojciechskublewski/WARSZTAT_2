@@ -83,6 +83,19 @@ public class Solution {
         return null;
     }
 
+
+    public void  delete (Connection conn, int id) throws SQLException {
+        if (id !=0){
+            String sql = "DELETE FROM solution WHERE id=?";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
+            preparedStatement.setInt(1,id);
+            preparedStatement.executeUpdate();
+            id=0;
+        }
+
+
+    }
+
     @Override
     public String toString() {
         return "Solution{" +

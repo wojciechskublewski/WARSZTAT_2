@@ -8,6 +8,10 @@ import java.util.ArrayList;
 
 public class Group {
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     private int id;
     private String name;
 
@@ -22,6 +26,24 @@ public class Group {
     public int getId() {
         return id;
     }
+
+
+
+    public void saveToDB (Connection conn) throws SQLException{
+        if (this.id==0) {
+            String sql = "INSERT INTO user_group(name) VALUES (?)";
+            String[] genertetedColumns = {"ID"};
+            PreparedStatement preparedStatement = conn.prepareStatement(sql,genertetedColumns);
+            preparedStatement.setString(1,this.name);
+            preparedStatement.executeUpdate();
+            ResultSet rs = preparedStatement.getGeneratedKeys();
+            if (rs.next()) {
+                this.id = rs.getInt(1);
+            }
+        }
+    }
+
+
 
     static public Group[] loadAllGroup(Connection conn) throws SQLException {
         ArrayList<Group> group_users = new ArrayList<Group>();
@@ -61,6 +83,8 @@ public class Group {
             id=0;
         }
     }
+
+
 
 
     @Override
