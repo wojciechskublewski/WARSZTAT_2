@@ -31,7 +31,7 @@ public class Group {
 
     public void saveToDB (Connection conn) throws SQLException{
         if (this.id==0) {
-            String sql = "INSERT INTO user_group(name) VALUES (?)";
+            String sql = "INSERT INTO user_group(name) VALUES (?);";
             String[] genertetedColumns = {"ID"};
             PreparedStatement preparedStatement = conn.prepareStatement(sql,genertetedColumns);
             preparedStatement.setString(1,this.name);
@@ -40,6 +40,12 @@ public class Group {
             if (rs.next()) {
                 this.id = rs.getInt(1);
             }
+        } else  {
+            String sql1 = "UPDATE user_group SET name=? WHERE id=?;";
+            PreparedStatement preparedStatement1 = conn.prepareStatement(sql1);
+            preparedStatement1.setString(1,this.name);
+            preparedStatement1.setInt(2,this.id);
+            preparedStatement1.executeUpdate();
         }
     }
 
@@ -60,10 +66,10 @@ public class Group {
         return uArray;
     }
 
-    static public Group loadById(Connection conn, int id) throws SQLException{
+    public Group loadById(Connection conn) throws SQLException{
         String sql = "SELECT * FROM user_group WHERE id=?";
         PreparedStatement preparedStatement = conn.prepareStatement(sql);
-        preparedStatement.setInt(1,id);
+        preparedStatement.setInt(1, this.id);
         ResultSet resultSet = preparedStatement.executeQuery();
         if (resultSet.next()) {
             Group loadedGroup = new Group();
@@ -74,13 +80,13 @@ public class Group {
         return null;
     }
 
-    public void delete(Connection conn, int id) throws SQLException{
-        if (id !=0) {
+    public void delete(Connection conn) throws SQLException{
+        if (this.id !=0) {
             String sql = "DELETE FROM user_group WHERE id=?";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setInt(1,id);
+            preparedStatement.setInt(1,this.id);
             preparedStatement.executeUpdate();
-            id=0;
+            this.id=0;
         }
     }
 

@@ -14,6 +14,15 @@ public class User {
     private String password;
     private String email;
     private long id;
+
+    public Object getGroup() {
+        return group;
+    }
+
+    public void setGroup(Object group) {
+        this.group = group;
+    }
+
     private Object group;
 
 
@@ -50,6 +59,32 @@ public class User {
     }
 
 
+    public void saveToDB(Connection conn) throws SQLException {
+        if (this.id ==0) {
+            String sql = "INSERT INTO users(username, password, email, user_group_id) VALUES (?,?,?,?);";
+            String[] generatedColumns = {"ID"};
+            PreparedStatement preparedStatement = conn.prepareStatement(sql,generatedColumns);
+            preparedStatement.setString(1, this.username);
+            preparedStatement.setString(2,this.password);
+            preparedStatement.setString(3,this.email);
+            preparedStatement.setObject(4,this.group);
+            preparedStatement.executeUpdate();
+            ResultSet rs = preparedStatement.getGeneratedKeys();
+            if (rs.next()) {
+                this.id = rs.getLong(1);
+            }
+        } else {
+            String sql1 = "UPDATE users SET username=?, password=?, email=?, user_group_id=? WHERE id=?;";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql1);
+            preparedStatement.setString(1,this.username);
+            preparedStatement.setString(2,this.password);
+            preparedStatement.setString(3,this.email);
+            preparedStatement.setObject(4,this.group);
+            preparedStatement.setLong(5, this.id);
+            preparedStatement.executeUpdate();
+        }
+    }
+
 
     static public src.com.company.model.User[] loadAllUser(Connection conn) throws SQLException {
         ArrayList<src.com.company.model.User> users = new ArrayList<src.com.company.model.User>();
@@ -69,10 +104,10 @@ public class User {
         return uArray;
     }
 
-    static public User loadById (Connection conn, int id) throws SQLException{
+    public User loadById(Connection conn) throws SQLException{
         String sql = "SELECT * FROM users WHERE id=?";
         PreparedStatement preparedStatement = conn.prepareStatement(sql);
-        preparedStatement.setInt(1,id);
+        preparedStatement.setLong(1, this.id);
         ResultSet resultSet = preparedStatement.executeQuery();
         if (resultSet.next()) {
             User loadedUser = new User();
@@ -87,12 +122,12 @@ public class User {
     }
 
     public void delete(Connection conn, int id) throws SQLException{
-        if (id !=0) {
+        if (this.id !=0) {
             String sql = "DELETE FROM users WHERE id=?";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setInt(1,id);
+            preparedStatement.setLong(1,this.id);
             preparedStatement.executeUpdate();
-            id=0;
+            this.id=0;
         }
     }
 

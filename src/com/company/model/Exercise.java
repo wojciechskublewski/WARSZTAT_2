@@ -37,6 +37,31 @@ public class Exercise {
         this.description = description;
     }
 
+
+    public void saveToDB(Connection conn) throws SQLException{
+        if(this.id==0) {
+            String sql = "INSERT INTO exercise(title, description) VALUES (?,?);";
+            String[] generatedColumns = {"ID"};
+            PreparedStatement preparedStatement = conn.prepareStatement(sql, generatedColumns);
+            preparedStatement.setString(1, this.title);
+            preparedStatement.setString(2,this.description);
+            preparedStatement.executeUpdate();
+            ResultSet rs = preparedStatement.getGeneratedKeys();
+            if(rs.next()){
+                this.id = rs.getInt(1);
+            }
+        }else {
+            String sql1 = "UPDATE exercise SET title=?, description=? WHERE id=?;";
+            PreparedStatement preparedStatement = conn.prepareStatement(sql1);
+            preparedStatement.setString(1,this.title);
+            preparedStatement.setString(2,this.description);
+            preparedStatement.setInt(3,this.id);
+            preparedStatement.executeUpdate();
+        }
+
+    }
+
+
     static public src.com.company.model.Exercise[] loadAllExercise(Connection conn) throws SQLException {
         ArrayList<src.com.company.model.Exercise> exercises = new ArrayList<Exercise>();
         String sql = "SELECT * FROM exercise";
@@ -53,10 +78,10 @@ public class Exercise {
         return uArray;
     }
 
-    static public Exercise loadById(Connection conn, int id) throws SQLException {
+    public Exercise loadById(Connection conn) throws SQLException {
         String sql = "SELECT * FROM exercise WHERE id=?";
         PreparedStatement preparedStatement = conn.prepareStatement(sql);
-        preparedStatement.setInt(1,id);
+        preparedStatement.setInt(1, this.id);
         ResultSet resultSet = preparedStatement.executeQuery();
         if (resultSet.next()) {
             Exercise loadedExercise = new Exercise();
@@ -69,13 +94,13 @@ public class Exercise {
     }
 
 
-    public void delete (Connection conn, int id) throws SQLException {
-        if (id !=0) {
+    public void delete (Connection conn) throws SQLException {
+        if (this.id !=0) {
             String sql ="DELETE  FROM exercise WHERE id=?";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setInt(1,id);
+            preparedStatement.setInt(1,this.id);
             preparedStatement.executeUpdate();
-            id=0;
+            this.id=0;
         }
     }
 

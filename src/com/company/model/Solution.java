@@ -6,9 +6,26 @@ import java.util.ArrayList;
 public class Solution {
 
     private int id;
-    private Date created;
-    private Date updated;
+    private java.util.Date created;
+    private java.util.Date updated;
     private String description;
+
+    public Object getExercise() {
+        return exercise;
+    }
+
+    public void setExercise(Object exercise) {
+        this.exercise = exercise;
+    }
+
+    public Object getUser() {
+        return user;
+    }
+
+    public void setUser(Object user) {
+        this.user = user;
+    }
+
     private Object exercise;
     private Object user;
 
@@ -21,20 +38,20 @@ public class Solution {
         this.id = id;
     }
 
-    public Date getCreated() {
+    public java.util.Date getCreated() {
         return created;
     }
 
-    public void setCreated(Date created) {
-        this.created = created;
+    public void setCreated(java.util.Date created) {
+        this.created = (Date) created;
     }
 
-    public Date getUpdated() {
+    public java.util.Date getUpdated() {
         return updated;
     }
 
-    public void setUpdated(Date updated) {
-        this.updated = updated;
+    public void setUpdated(java.util.Date updated) {
+        this.updated = (Date) updated;
     }
 
     public String getDescription() {
@@ -43,6 +60,34 @@ public class Solution {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void saveToDB(Connection conn) throws SQLException{
+        if (this.id==0) {
+            String sql = "INSERT INTO solution(created, updates, description, exercise_id, users_id) VALUES (?,?,?,?,?);";
+            String[] generatedColumns = {"ID"};
+            PreparedStatement preparedStatement = conn.prepareStatement(sql, generatedColumns);
+            preparedStatement.setDate(1, (Date) this.created);
+            preparedStatement.setDate(2, (Date) this.updated);
+            preparedStatement.setString(3,this.description);
+            preparedStatement.setObject(4,this.exercise);
+            preparedStatement.setObject(5,this.user);
+            preparedStatement.executeUpdate();
+            ResultSet rs = preparedStatement.getGeneratedKeys();
+            if (rs.next()) {
+                this.id = rs.getInt(1);
+            }
+        } else  {
+            String sql1 = "UPDATE solution SET created=?, updates=?, description=?, exercise_id=?, users_id=? WHERE id=?;";
+            PreparedStatement preparedStatement =conn.prepareStatement(sql1);
+            preparedStatement.setDate(1, (Date) this.created);
+            preparedStatement.setDate(2, (Date) this.updated);
+            preparedStatement.setString(3,this.description);
+            preparedStatement.setObject(4,this.exercise);
+            preparedStatement.setObject(5,this.user);
+            preparedStatement.setInt(6,this.id);
+            preparedStatement.executeUpdate();
+        }
     }
 
 
@@ -65,10 +110,10 @@ public class Solution {
         return uArray;
     }
 
-    static public Solution loadByID (Connection conn, int id) throws SQLException {
+    public Solution loadByID(Connection conn) throws SQLException {
         String sql = "SELECT * FROM solution WHERE id=?";
         PreparedStatement preparedStatement = conn.prepareStatement(sql);
-        preparedStatement.setInt(1,id);
+        preparedStatement.setInt(1,this.id);
         ResultSet resultSet = preparedStatement.executeQuery();
         if(resultSet.next()){
             Solution loadedSolution = new Solution();
@@ -84,13 +129,13 @@ public class Solution {
     }
 
 
-    public void  delete (Connection conn, int id) throws SQLException {
-        if (id !=0){
+    public void  delete (Connection conn) throws SQLException {
+        if (this.id !=0){
             String sql = "DELETE FROM solution WHERE id=?";
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
-            preparedStatement.setInt(1,id);
+            preparedStatement.setInt(1,this.id);
             preparedStatement.executeUpdate();
-            id=0;
+            this.id=0;
         }
 
 
