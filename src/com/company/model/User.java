@@ -1,7 +1,5 @@
 package src.com.company.model;
 
-import java.io.InputStream;
-import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -54,7 +52,7 @@ public class User {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -85,6 +83,26 @@ public class User {
         }
     }
 
+    static public src.com.company.model.User[] loadAllByGroupId(Connection conn, int id) throws SQLException {
+        ArrayList<src.com.company.model.User> users = new ArrayList<src.com.company.model.User>();
+        String sql = "SELECT * FROM users join user_group on users.user_group_id = user_group.id where user_group.id=?";
+        src.com.company.model.Group group = new src.com.company.model.Group();
+        PreparedStatement preparedStatement = conn.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while (resultSet.next()) {
+            src.com.company.model.User loadedUser = new src.com.company.model.User();
+            loadedUser.id = resultSet.getLong("id");
+            loadedUser.username = resultSet.getString("username");
+            loadedUser.password = resultSet.getString("password");
+            loadedUser.email = resultSet.getString("email");
+            loadedUser.group = resultSet.getObject("user_group_id");
+            loadedUser.group = group.loadById(conn,id);
+            users.add(loadedUser);}
+        src.com.company.model.User[] uArray = new src.com.company.model.User[users.size()];
+        uArray = users.toArray(uArray);
+        return uArray;
+    }
 
     static public src.com.company.model.User[] loadAllUser(Connection conn) throws SQLException {
         ArrayList<src.com.company.model.User> users = new ArrayList<src.com.company.model.User>();
@@ -104,10 +122,11 @@ public class User {
         return uArray;
     }
 
-    public User loadById(Connection conn) throws SQLException{
+
+    public static User loadById(Connection conn, long id) throws SQLException{
         String sql = "SELECT * FROM users WHERE id=?";
         PreparedStatement preparedStatement = conn.prepareStatement(sql);
-        preparedStatement.setLong(1, this.id);
+        preparedStatement.setLong(1, id);
         ResultSet resultSet = preparedStatement.executeQuery();
         if (resultSet.next()) {
             User loadedUser = new User();

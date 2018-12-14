@@ -78,10 +78,10 @@ public class Exercise {
         return uArray;
     }
 
-    public Exercise loadById(Connection conn) throws SQLException {
+    public Exercise loadById(Connection conn, int id) throws SQLException {
         String sql = "SELECT * FROM exercise WHERE id=?";
         PreparedStatement preparedStatement = conn.prepareStatement(sql);
-        preparedStatement.setInt(1, this.id);
+        preparedStatement.setInt(1, id);
         ResultSet resultSet = preparedStatement.executeQuery();
         if (resultSet.next()) {
             Exercise loadedExercise = new Exercise();

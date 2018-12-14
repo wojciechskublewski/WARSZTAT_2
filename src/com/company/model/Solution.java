@@ -30,7 +30,7 @@ public class Solution {
     private Object user;
 
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -57,6 +57,55 @@ public class Solution {
     public String getDescription() {
         return description;
     }
+
+
+    static public Solution[] loadAllByExerciseId(Connection conn, int id) throws SQLException {
+        src.com.company.model.Exercise exercise = new src.com.company.model.Exercise();
+        ArrayList<src.com.company.model.Solution> solutions = new ArrayList<Solution>();
+        String sql = "select * from solution join exercise on exercise.id=solution.exercise_id where exercise.id=? order by updates asc;";
+        PreparedStatement preparedStatement = conn.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        while (resultSet.next()) {
+            src.com.company.model.Solution loadedSolution = new src.com.company.model.Solution();
+            loadedSolution.id = resultSet.getInt("id");
+            loadedSolution.created = resultSet.getDate("created");
+            loadedSolution.updated = resultSet.getDate("updates");
+            loadedSolution.description = resultSet.getString("description");
+            loadedSolution.exercise = resultSet.getObject("exercise_id");
+            loadedSolution.user = resultSet.getObject("users_id");
+            loadedSolution.exercise = exercise.loadById(conn,id);
+            solutions.add(loadedSolution);}
+        src.com.company.model.Solution[] uArray = new src.com.company.model.Solution[solutions.size()];
+        uArray = solutions.toArray(uArray);
+        return uArray;
+
+    }
+
+    static public Solution[] loadByUserID(Connection conn, int id) throws SQLException {
+        src.com.company.model.User user = new src.com.company.model.User();
+        ArrayList<src.com.company.model.Solution> solutions = new ArrayList<Solution>();
+        String sql = "select * from solution join users on users.id=solution.users_id where users.id=?;";
+        PreparedStatement preparedStatement = conn.prepareStatement(sql);
+        preparedStatement.setInt(1, id);
+        ResultSet resultSet = preparedStatement.executeQuery();
+        int supInt =0;
+        while (resultSet.next()) {
+            src.com.company.model.Solution loadedSolution = new src.com.company.model.Solution();
+            loadedSolution.id = resultSet.getInt("id");
+            loadedSolution.created = resultSet.getDate("created");
+            loadedSolution.updated = resultSet.getDate("updates");
+            loadedSolution.description = resultSet.getString("description");
+            loadedSolution.exercise = resultSet.getObject("exercise_id");
+            loadedSolution.user = resultSet.getObject("users_id");
+            loadedSolution.user= src.com.company.model.User.loadById(conn,id);
+            solutions.add(loadedSolution);}
+        src.com.company.model.Solution[] uArray = new src.com.company.model.Solution[solutions.size()];
+        uArray = solutions.toArray(uArray);
+        return uArray;
+
+    }
+
 
     public void setDescription(String description) {
         this.description = description;
@@ -110,10 +159,10 @@ public class Solution {
         return uArray;
     }
 
-    public Solution loadByID(Connection conn) throws SQLException {
+    public static Solution loadByID(Connection conn, int id) throws SQLException {
         String sql = "SELECT * FROM solution WHERE id=?";
         PreparedStatement preparedStatement = conn.prepareStatement(sql);
-        preparedStatement.setInt(1,this.id);
+        preparedStatement.setInt(1, id);
         ResultSet resultSet = preparedStatement.executeQuery();
         if(resultSet.next()){
             Solution loadedSolution = new Solution();

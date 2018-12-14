@@ -66,10 +66,10 @@ public class Group {
         return uArray;
     }
 
-    public Group loadById(Connection conn) throws SQLException{
+    public Group loadById(Connection conn, int id) throws SQLException{
         String sql = "SELECT * FROM user_group WHERE id=?";
         PreparedStatement preparedStatement = conn.prepareStatement(sql);
-        preparedStatement.setInt(1, this.id);
+        preparedStatement.setInt(1, id);
         ResultSet resultSet = preparedStatement.executeQuery();
         if (resultSet.next()) {
             Group loadedGroup = new Group();
